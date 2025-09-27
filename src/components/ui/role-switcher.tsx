@@ -1,6 +1,13 @@
 import { Users, Chrome as Home } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { switchRole, logout } from '../../store/slices/authSlice';
 import { useNavigate } from 'react-router-dom';

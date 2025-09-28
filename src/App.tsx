@@ -1,6 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './store/store';
 import { ThemeProvider } from './components/providers/ThemeProvider';
 import { Navbar } from './components/layout/Navbar';
 import { HostNavbar } from './components/layout/HostNavbar';
@@ -22,32 +20,30 @@ function App() {
   const isHost = user?.role === 'host';
 
   return (
-    <Provider store={store}>
-      <ThemeProvider>
-        <Router>
-          <div className="min-h-screen bg-background">
-            {isHost ? <HostNavbar /> : <Navbar />}
-            
-            <main>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/favorites" element={<Favorites />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/host/profile" element={<HostProfile />} />
-                <Route path="/host/dashboard" element={<HostDashboard />} />
-                <Route path="/host/kyc" element={<HostKYC />} />
-                <Route path="/host/create-product" element={<CreateProduct />} />
-              </Routes>
-            </main>
+    <ThemeProvider>
+      <Router>
+        <div className="min-h-screen bg-background">
+          {isHost ? <HostNavbar /> : <Navbar />}
+          
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/host/profile" element={<HostProfile />} />
+              <Route path="/host/dashboard" element={<HostDashboard />} />
+              <Route path="/host/kyc" element={<HostKYC />} />
+              <Route path="/host/create-product" element={<CreateProduct />} />
+            </Routes>
+          </main>
 
-            <Footer />
-            <Toaster />
-          </div>
-        </Router>
-      </ThemeProvider>
-    </Provider>
+          <Footer />
+          <Toaster />
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 

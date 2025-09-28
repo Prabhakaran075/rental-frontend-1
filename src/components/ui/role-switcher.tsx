@@ -1,53 +1,52 @@
 import { useState } from 'react';
-import { User, UserCheck } from 'lucide-react';
 import { Button } from './button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './dropdown-menu';
+import { Badge } from './badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './dropdown-menu';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import { switchRole } from '../../store/slices/authSlice';
+import { switchRole, logout } from '../../store/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const RoleSwitcher = () => {
-  const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   if (!isAuthenticated || !user) {
     return null;
   }
 
-  const handleRoleSwitch = (role: 'renter' | 'host') => {
-    dispatch(switchRole(role));
+  const handleRoleSwitch = (newRole: 'renter' | 'host') => {
+    dispatch(switchRole(newRole));
+    
+    // Navigate to appropriate page based on role
+    if (newRole === 'host') {
+      navigate('/host/dashboard');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
-          {user.role === 'host' ? <UserCheck className="h-4 w-4" /> : <User className="h-4 w-4" />}
-          {user.role === 'host' ? 'Host' : 'Renter'}
+          <Badge variant={user.role === 'host' ? 'default' : 'secondary'}>
+            {user.role === 'host' ? 'Host' : 'Renter'}
+          </Badge>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem 
           onClick={() => handleRoleSwitch('renter')}
-          className={user.role === 'renter' ? 'bg-accent' : ''}
+          disabled={user.role === 'renter'}
         >
-          <User className="h-4 w-4 mr-2" />
-          Renter Mode
-          {user.role === 'renter' && <span className="ml-auto">✓</span>}
+          Switch to Renter
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
+        <DropdownMenuItem 
           onClick={() => handleRoleSwitch('host')}
-          className={user.role === 'host' ? 'bg-accent' : ''}
+          disabled={user.role === 'host'}
         >
-          <UserCheck className="h-4 w-4 mr-2" />
-          Host Mode
-          {user.role === 'host' && <span className="ml-auto">✓</span>}
+          Switch to Host
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -150,6 +150,16 @@ export const HostProfile = () => {
               <p className="text-sm text-muted-foreground mt-2">
                 Complete your profile to increase trust with renters
               </p>
+              {calculateProfileCompletion() < 100 && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-3"
+                  onClick={() => navigate('/host/complete-profile')}
+                >
+                  Continue Your Profile
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -317,9 +327,16 @@ export const HostProfile = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Verify your phone number to enable secure communication
                 </p>
-                <Badge variant={kycStatus.phoneVerified ? 'default' : 'secondary'}>
-                  {getKycStatusText(kycStatus.phoneVerified)}
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant={kycStatus.phoneVerified ? 'default' : 'secondary'}>
+                    {getKycStatusText(kycStatus.phoneVerified)}
+                  </Badge>
+                  {!kycStatus.phoneVerified && (
+                    <Button size="sm" variant="outline">
+                      Verify Phone
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -337,9 +354,16 @@ export const HostProfile = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Government ID and live video verification completed
                 </p>
-                <Badge variant={kycStatus.identityVerified ? 'default' : 'secondary'}>
-                  {getKycStatusText(kycStatus.identityVerified)}
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant={kycStatus.identityVerified ? 'default' : 'secondary'}>
+                    {getKycStatusText(kycStatus.identityVerified)}
+                  </Badge>
+                  {!kycStatus.identityVerified && (
+                    <Button size="sm" variant="outline">
+                      Upload ID & Video
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -384,9 +408,16 @@ export const HostProfile = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Link your bank account for secure payments
                 </p>
-                <Badge variant={kycStatus.bankVerified ? 'default' : 'secondary'}>
-                  {getKycStatusText(kycStatus.bankVerified)}
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant={kycStatus.bankVerified ? 'default' : 'secondary'}>
+                    {getKycStatusText(kycStatus.bankVerified)}
+                  </Badge>
+                  {!kycStatus.bankVerified && (
+                    <Button size="sm" variant="outline">
+                      Link Bank Account
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

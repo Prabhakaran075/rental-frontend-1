@@ -12,6 +12,12 @@ import { HostProfile } from './pages/HostProfile';
 import { HostDashboard } from './pages/HostDashboard';
 import { HostKYC } from './pages/HostKYC';
 import { CreateProduct } from './pages/CreateProduct';
+import { CompleteProfile } from './pages/CompleteProfile';
+import { HostAnalytics } from './pages/HostAnalytics';
+import { MyRentals } from './pages/MyRentals';
+import { Payment } from './pages/Payment';
+import { AdminLogin } from './pages/AdminLogin';
+import { AdminDashboard } from './pages/AdminDashboard';
 import { Toaster } from '@/components/ui/toaster';
 import { useAppSelector } from './hooks';
 
@@ -31,11 +37,17 @@ function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/favorites" element={<Favorites />} />
+              <Route path="/my-rentals" element={<MyRentals />} />
+              <Route path="/payment" element={<Payment />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/host/profile" element={<HostProfile />} />
+              <Route path="/host/complete-profile" element={<CompleteProfile />} />
               <Route path="/host/dashboard" element={<HostDashboard />} />
+              <Route path="/host/analytics" element={<HostAnalytics />} />
               <Route path="/host/kyc" element={<HostKYC />} />
               <Route path="/host/create-product" element={<CreateProduct />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Routes>
           </main>
 

@@ -188,6 +188,12 @@ export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarPro
                       Profile Settings
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/my-rentals" className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      My Rentals
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     Logout
                   </DropdownMenuItem>
@@ -205,14 +211,18 @@ export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarPro
               </Dialog>
             )}
 
-            <Button variant="ghost" size="sm" className="relative">
-              <Calendar className="h-4 w-4" />
-              {rentals.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {rentals.length}
-                </span>
-              )}
-            </Button>
+            {isAuthenticated && (
+              <Link to="/my-rentals">
+                <Button variant="ghost" size="sm" className="relative">
+                  <Calendar className="h-4 w-4" />
+                  {rentals.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {rentals.length}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
             
             <ThemeToggle />
           </div>

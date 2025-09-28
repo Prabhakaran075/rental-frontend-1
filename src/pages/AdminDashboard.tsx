@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Shield, Users, Package, DollarSign, TrendingUp, Eye, Trash2, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Shield, Users, Package, DollarSign, TrendingUp, Eye, Trash2, CircleCheck as CheckCircle, Circle as XCircle, TriangleAlert as AlertTriangle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, User, Menu, X, Plus, Package, ChartBar as BarChart3, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, User, Menu, X, Plus, Package, ChartBar as BarChart3, Settings, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,10 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '../ui/theme-toggle';
 import { RoleSwitcher } from '../ui/role-switcher';
+import { Badge } from '../ui/badge';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { setSearchTerm } from '../../store/slices/productsSlice';
+import { useDebounce } from '../../hooks/useDebounce';
 import { loginSuccess, logout } from '../../store/slices/authSlice';
 
 interface HostNavbarProps {
@@ -24,18 +26,25 @@ export const HostNavbar = ({ searchTerm: propSearchTerm, onSearchChange }: HostN
   
   const { searchTerm: storeSearchTerm } = useAppSelector((state) => state.products);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const [localSearchTerm, setLocalSearchTerm] = useState(propSearchTerm ?? storeSearchTerm);
+  const debouncedSearchTerm = useDebounce(localSearchTerm, 300);
   
   const searchTerm = propSearchTerm ?? storeSearchTerm;
   
-  const handleSearchChange = (term: string) => {
+  // Update search when debounced value changes
+  React.useEffect(() => {
     if (onSearchChange) {
-      onSearchChange(term);
+      onSearchChange(debouncedSearchTerm);
     } else {
-      dispatch(setSearchTerm(term));
-      if (term.trim()) {
+      dispatch(setSearchTerm(debouncedSearchTerm));
+      if (debouncedSearchTerm.trim()) {
         navigate('/products');
       }
     }
+  }, [debouncedSearchTerm, onSearchChange, dispatch, navigate]);
+
+  const handleSearchChange = (term: string) => {
+    setLocalSearchTerm(term);
   };
 
   const handleLogin = () => {
@@ -159,20 +168,22 @@ export const HostNavbar = ({ searchTerm: propSearchTerm, onSearchChange }: HostN
             </Link>
           </nav>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-4 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search your products..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-            />
-          </div>
-
           {/* Right Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ml-auto">
             <RoleSwitcher />
+            
+            <Button variant="ghost" size="sm" onClick={() => navigate('/products')}>
+              <Search className="h-4 w-4" />
+            </Button>
+            
+            <Link to="/notifications">
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-4 w-4" />
+                <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
+                  2
+                </Badge>
+              </Button>
+            </Link>
             
             {isAuthenticated ? (
               <DropdownMenu>

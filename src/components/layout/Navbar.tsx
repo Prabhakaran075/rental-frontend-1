@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, User, ShoppingCart, Menu, X, Calendar, Heart, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, User, ShoppingCart, Menu, X, Calendar, Heart, Settings, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,10 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '../ui/theme-toggle';
 import { RoleSwitcher } from '../ui/role-switcher';
+import { Badge } from '../ui/badge';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { setSearchTerm } from '../../store/slices/productsSlice';
+import { useDebounce } from '../../hooks/useDebounce';
 import { loginSuccess, logout } from '../../store/slices/authSlice';
 
 interface NavbarProps {
@@ -25,20 +27,30 @@ export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarPro
   const { searchTerm: storeSearchTerm } = useAppSelector((state) => state.products);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const { rentals } = useAppSelector((state) => state.rental);
+  const [localSearchTerm, setLocalSearchTerm] = useState(propSearchTerm ?? storeSearchTerm);
+  const debouncedSearchTerm = useDebounce(localSearchTerm, 300);
   
   const searchTerm = propSearchTerm ?? storeSearchTerm;
   
-  const handleSearchChange = (term: string) => {
+  // Update search when debounced value changes
+  React.useEffect(() => {
     if (onSearchChange) {
-      onSearchChange(term);
+      onSearchChange(debouncedSearchTerm);
     } else {
-      dispatch(setSearchTerm(term));
-      if (term.trim()) {
+      dispatch(setSearchTerm(debouncedSearchTerm));
+      if (debouncedSearchTerm.trim()) {
         navigate('/products');
       }
     }
+  }, [debouncedSearchTerm, onSearchChange, dispatch, navigate]);
+
+  const handleSearchChange = (term: string) => {
+    setLocalSearchTerm(term);
   };
 
+  const handleSearchClick = () => {
+    navigate('/products');
+  };
   const handleLogin = () => {
     // Mock login - in real app, this would be an API call
     dispatch(loginSuccess({
@@ -149,20 +161,24 @@ export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarPro
             <a href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Support</a>
           </nav>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-4 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search products..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-            />
-          </div>
-
           {/* Right Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ml-auto">
             <RoleSwitcher />
+            
+            <Button variant="ghost" size="sm" onClick={handleSearchClick}>
+              <Search className="h-4 w-4" />
+            </Button>
+            
+            {isAuthenticated && (
+              <Link to="/notifications">
+                <Button variant="ghost" size="sm" className="relative">
+                  <Bell className="h-4 w-4" />
+                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
+                    3
+                  </Badge>
+                </Button>
+              </Link>
+            )}
             
             {isAuthenticated && user?.role === 'renter' && (
               <Link to="/favorites">
@@ -188,6 +204,12 @@ export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarPro
                       Profile Settings
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/my-rentals" className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      My Rentals
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     Logout
                   </DropdownMenuItem>
@@ -205,14 +227,18 @@ export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarPro
               </Dialog>
             )}
 
-            <Button variant="ghost" size="sm" className="relative">
-              <Calendar className="h-4 w-4" />
-              {rentals.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {rentals.length}
-                </span>
-              )}
-            </Button>
+            {isAuthenticated && (
+              <Link to="/my-rentals">
+                <Button variant="ghost" size="sm" className="relative">
+                  <Calendar className="h-4 w-4" />
+                  {rentals.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {rentals.length}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
             
             <ThemeToggle />
           </div>

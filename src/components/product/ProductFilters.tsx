@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Filter, X } from 'lucide-react';
 import { categories } from '../../data/products';
 import { useState } from 'react';
+import { SearchWithSuggestions } from '../ui/search-with-suggestions';
 
 interface ProductFiltersProps {
   selectedCategory: string;
@@ -26,6 +27,8 @@ interface ProductFiltersProps {
   onAvailabilityChange?: (availability: 'all' | 'available' | 'unavailable') => void;
   locationFilter?: string;
   onLocationChange?: (location: string) => void;
+  searchTerm?: string;
+  onSearchChange?: (search: string) => void;
 }
 
 const commonFeatures = [
@@ -54,7 +57,9 @@ export const ProductFilters = ({
   availabilityFilter = 'all',
   onAvailabilityChange,
   locationFilter = '',
-  onLocationChange
+  onLocationChange,
+  searchTerm = '',
+  onSearchChange
 }: ProductFiltersProps) => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -74,6 +79,7 @@ export const ProductFilters = ({
     onFeaturesChange?.([]);
     onAvailabilityChange?.('all');
     onLocationChange?.('');
+    onSearchChange?.('');
   };
 
   const activeFiltersCount = [
@@ -81,11 +87,24 @@ export const ProductFilters = ({
     priceRange[0] > 0 || priceRange[1] < 1000,
     selectedFeatures.length > 0,
     availabilityFilter !== 'all',
-    locationFilter.length > 0
+    locationFilter.length > 0,
+    searchTerm.length > 0
   ].filter(Boolean).length;
 
   return (
     <div className="space-y-4">
+      {/* Search Bar */}
+      {onSearchChange && (
+        <div className="max-w-md">
+          <SearchWithSuggestions
+            value={searchTerm}
+            onChange={onSearchChange}
+            placeholder="Search products, categories, or tags..."
+            className="w-full"
+          />
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           <span className="text-sm text-muted-foreground">
@@ -121,6 +140,17 @@ export const ProductFilters = ({
             {activeFiltersCount > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 text-xs">
                 {activeFiltersCount}
+              </Badge>
+            )}
+            {searchTerm && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                "{searchTerm}"
+                <button
+                  onClick={() => onSearchChange?.('')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
           </Button>

@@ -14,7 +14,8 @@ import {
   setPriceRange,
   setSelectedFeatures,
   setAvailabilityFilter,
-  setLocationFilter
+  setLocationFilter,
+  setSearchTerm
 } from '../store/slices/productsSlice';
 import { mockProducts } from '../data/products';
 import { useMemo } from 'react';
@@ -172,6 +173,8 @@ export const Products = () => {
         onAvailabilityChange={(availability) => dispatch(setAvailabilityFilter(availability))}
         locationFilter={locationFilter}
         onLocationChange={(location) => dispatch(setLocationFilter(location))}
+        searchTerm={searchTerm}
+        onSearchChange={(search) => dispatch(setSearchTerm(search))}
       />
 
       <ProductGrid products={currentProducts} loading={false} />

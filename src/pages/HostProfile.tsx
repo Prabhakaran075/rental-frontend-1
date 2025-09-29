@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, MapPin, Camera, Upload, Save, Shield, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Clock, FileText, Video } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -34,6 +36,19 @@ export const HostProfile = () => {
     businessType: 'Individual',
     taxId: '***-**-1234'
   });
+
+  // Check if profile is complete
+  const isProfileComplete = useMemo(() => {
+    const requiredFields = [
+      formData.name,
+      formData.email,
+      formData.phone,
+      formData.address,
+      formData.bio,
+      formData.businessName
+    ];
+    return requiredFields.every(field => field.trim().length > 0);
+  }, [formData]);
 
   const [kycStatus] = useState({
     phoneVerified: true,
@@ -150,6 +165,14 @@ export const HostProfile = () => {
               <p className="text-sm text-muted-foreground mt-2">
                 Complete your profile to increase trust with renters
               </p>
+              {calculateProfileCompletion() < 100 && (
+                <Button
+                  size="sm"
+                  onClick={() => navigate('/host/complete-profile')}
+                >
+                  Continue Your Profile
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -317,9 +340,16 @@ export const HostProfile = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Verify your phone number to enable secure communication
                 </p>
-                <Badge variant={kycStatus.phoneVerified ? 'default' : 'secondary'}>
-                  {getKycStatusText(kycStatus.phoneVerified)}
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant={kycStatus.phoneVerified ? 'default' : 'secondary'}>
+                    {getKycStatusText(kycStatus.phoneVerified)}
+                  </Badge>
+                  {!kycStatus.phoneVerified && (
+                    <Button size="sm" variant="outline">
+                      Verify Phone
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -337,9 +367,16 @@ export const HostProfile = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Government ID and live video verification completed
                 </p>
-                <Badge variant={kycStatus.identityVerified ? 'default' : 'secondary'}>
-                  {getKycStatusText(kycStatus.identityVerified)}
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant={kycStatus.identityVerified ? 'default' : 'secondary'}>
+                    {getKycStatusText(kycStatus.identityVerified)}
+                  </Badge>
+                  {!kycStatus.identityVerified && (
+                    <Button size="sm" variant="outline">
+                      Upload ID & Video
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -384,9 +421,16 @@ export const HostProfile = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Link your bank account for secure payments
                 </p>
-                <Badge variant={kycStatus.bankVerified ? 'default' : 'secondary'}>
-                  {getKycStatusText(kycStatus.bankVerified)}
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant={kycStatus.bankVerified ? 'default' : 'secondary'}>
+                    {getKycStatusText(kycStatus.bankVerified)}
+                  </Badge>
+                  {!kycStatus.bankVerified && (
+                    <Button size="sm" variant="outline">
+                      Link Bank Account
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

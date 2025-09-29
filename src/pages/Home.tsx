@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Hero } from '../components/layout/Hero';
+import { HomeBanners } from '../components/layout/HomeBanners';
 import { SkeletonHero } from '../components/ui/skeleton-hero';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { ProductFilters } from '../components/product/ProductFilters';
@@ -16,7 +17,8 @@ import {
   setPriceRange,
   setSelectedFeatures,
   setAvailabilityFilter,
-  setLocationFilter
+  setLocationFilter,
+  setSearchTerm
 } from '../store/slices/productsSlice';
 import { mockProducts } from '../data/products';
 import { useMemo } from 'react';
@@ -129,6 +131,9 @@ export const Home = () => {
       {/* Hero Section */}
       {loading ? <SkeletonHero /> : <Hero />}
 
+      {/* Banners Section */}
+      <HomeBanners />
+
       {/* Featured Products Section */}
       <section className="py-12 lg:py-16">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -172,6 +177,8 @@ export const Home = () => {
               onAvailabilityChange={(availability) => dispatch(setAvailabilityFilter(availability))}
               locationFilter={locationFilter}
               onLocationChange={(location) => dispatch(setLocationFilter(location))}
+              searchTerm={searchTerm}
+              onSearchChange={(search) => dispatch(setSearchTerm(search))}
             />
           )}
 

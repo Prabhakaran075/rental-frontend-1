@@ -18,7 +18,6 @@ import {
   setSelectedFeatures,
   setAvailabilityFilter,
   setLocationFilter,
-  setSearchTerm
 } from '../store/slices/productsSlice';
 import { mockProducts } from '../data/products';
 import { useMemo } from 'react';
@@ -26,7 +25,6 @@ import { useMemo } from 'react';
 export const Home = () => {
   const dispatch = useAppDispatch();
   const {
-    products,
     loading,
     searchTerm,
     selectedCategory,

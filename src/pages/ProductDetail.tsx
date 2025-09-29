@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Star, Calendar, Clock, User, Heart, Share2, ArrowLeft, CircleCheck as CheckCircle, MessageCircle } from 'lucide-react';
+import { MapPin, Star, Calendar, Heart, Share2, ArrowLeft, CircleCheck as CheckCircle, MessageCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { SkeletonProductDetail } from '../components/ui/skeleton-product-detail';
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { setSelectedProduct, toggleFavorite } from '../store/slices/productsSlice';
 import { setCurrentRental } from '../store/slices/rentalSlice';
@@ -24,14 +23,11 @@ export const ProductDetail = () => {
   
   const { selectedProduct, favorites } = useAppSelector((state) => state.products);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { currentRental } = useAppSelector((state) => state.rental);
   
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [rentalPeriod, setRentalPeriod] = useState<'days' | 'months' | 'years'>('days');
-  const [customDays, setCustomDays] = useState(1);
 
   useEffect(() => {
     const loadProduct = async () => {

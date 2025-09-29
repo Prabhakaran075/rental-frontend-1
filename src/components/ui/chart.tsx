@@ -4,6 +4,7 @@ import {
   NameType,
   Payload,
   ValueType,
+} from 'recharts/types/component/DefaultTooltipContent';
 
 import { cn } from '@/lib/utils';
 

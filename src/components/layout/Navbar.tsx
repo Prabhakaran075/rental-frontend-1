@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, User, ShoppingCart, Menu, X, Calendar, Heart, Settings, Bell } from 'lucide-react';
+import { Search, User, Menu, Calendar, Heart, Settings, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,6 @@ interface NavbarProps {
 
 export const Navbar = ({ searchTerm: propSearchTerm, onSearchChange }: NavbarProps) => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   
   const { searchTerm: storeSearchTerm } = useAppSelector((state) => state.products);

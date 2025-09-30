@@ -105,17 +105,38 @@ VITE_SUPABASE_ANON_KEY=your_anon_key`,
                           variant="ghost"
                           size="sm"
                           className="absolute top-2 right-2 h-6 w-6 p-0"
-                    <p className="text-muted-foreground">✅ Already configured in your project</p>
+                          onClick={() => copyToClipboard(step.code, index)}
                         >
-                  <CheckCircle className="h-5 w-5 text-green-500" />
                           {copiedStep === index ? (
                             <CheckCircle className="h-3 w-3" />
-                <div className="ml-8 mb-3">
-                  <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-3 rounded-md text-sm">
-                    <p className="text-green-800 dark:text-green-200">
-                      Environment variables are already set up in your .env file with the correct Supabase credentials.
-                    </p>
-                  </div>
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {index === 2 && (
+                    <div className="ml-8 mb-3">
+                      <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-3 rounded-md text-sm">
+                        <p className="text-green-800 dark:text-green-200">
+                          Environment variables are already set up in your .env file with the correct Supabase credentials.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {step.action && step.url && (
+                    <div className="ml-8">
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={step.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                          {step.action}
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </CardContent>

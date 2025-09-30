@@ -57,7 +57,20 @@ export const useSupabase = () => {
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
+        // If profile doesn't exist, it might be a new user
+        if (error.code === 'PGRST116') {
+          // Profile not found, user might be newly created
+          console.log('Profile not found, user might be newly created');
+          dispatch(loginSuccess({
+            id: user.id,
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            email: user.email || '',
+            avatar: user.user_metadata?.avatar_url,
+            role: 'renter', // Default role
+          }));
+        } else {
+          console.error('Error fetching profile:', error);
+        }
         return;
       }
 

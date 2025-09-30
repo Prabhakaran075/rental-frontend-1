@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Database, CheckCircle, XCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { Database, CircleCheck as CheckCircle, Circle as XCircle, CircleAlert as AlertCircle, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export const DatabaseStatus = () => {

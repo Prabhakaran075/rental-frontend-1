@@ -66,6 +66,13 @@ VITE_SUPABASE_ANON_KEY=your_anon_key`,
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Setup Steps */}
         <div className="space-y-6">
+          <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+            <AlertDescription className="text-blue-800 dark:text-blue-200">
+              <strong>Good news!</strong> Your environment variables are already configured. 
+              You just need to run the database migrations in your Supabase dashboard.
+            </AlertDescription>
+          </Alert>
+          
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -98,28 +105,17 @@ VITE_SUPABASE_ANON_KEY=your_anon_key`,
                           variant="ghost"
                           size="sm"
                           className="absolute top-2 right-2 h-6 w-6 p-0"
-                          onClick={() => copyToClipboard(step.code!, index)}
+                    <p className="text-muted-foreground">✅ Already configured in your project</p>
                         >
+                  <CheckCircle className="h-5 w-5 text-green-500" />
                           {copiedStep === index ? (
                             <CheckCircle className="h-3 w-3" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {step.url && (
-                    <div className="ml-8">
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={step.url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          {step.action}
-                        </a>
-                      </Button>
-                    </div>
-                  )}
+                <div className="ml-8 mb-3">
+                  <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-3 rounded-md text-sm">
+                    <p className="text-green-800 dark:text-green-200">
+                      Environment variables are already set up in your .env file with the correct Supabase credentials.
+                    </p>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -132,7 +128,7 @@ VITE_SUPABASE_ANON_KEY=your_anon_key`,
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Your project includes pre-built database migrations with the following tables:
+                Your project includes comprehensive database migrations with the following tables:
               </p>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <Badge variant="outline">profiles</Badge>
@@ -144,7 +140,7 @@ VITE_SUPABASE_ANON_KEY=your_anon_key`,
               </div>
               <Alert className="mt-4">
                 <AlertDescription>
-                  Run all migration files in order in your Supabase SQL editor to set up the complete database schema.
+                  <strong>Next step:</strong> Run all migration files in your Supabase SQL editor to set up the complete database schema with sample data.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -157,47 +153,45 @@ VITE_SUPABASE_ANON_KEY=your_anon_key`,
           
           <Card>
             <CardHeader>
-              <CardTitle>Quick Start Guide</CardTitle>
+              <CardTitle>Migration Instructions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <Alert>
+                <AlertDescription>
+                  <strong>Important:</strong> Run the migration files in the exact order they appear in your supabase/migrations folder.
+                </AlertDescription>
+              </Alert>
+              
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center mt-0.5">1</span>
                   <div>
-                    <p className="font-medium">Create Supabase Account</p>
-                    <p className="text-muted-foreground">Sign up at supabase.com if you haven't already</p>
+                    <p className="font-medium">Open Supabase SQL Editor</p>
+                    <p className="text-muted-foreground">Navigate to your project's SQL editor</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center mt-0.5">2</span>
                   <div>
-                    <p className="font-medium">Create New Project</p>
-                    <p className="text-muted-foreground">Choose a name and region for your database</p>
+                    <p className="font-medium">Run Migration Files</p>
+                    <p className="text-muted-foreground">Execute each .sql file in chronological order</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center mt-0.5">3</span>
                   <div>
-                    <p className="font-medium">Copy Credentials</p>
-                    <p className="text-muted-foreground">Get URL and anon key from Settings → API</p>
+                    <p className="font-medium">Verify Setup</p>
+                    <p className="text-muted-foreground">Check that all tables and sample data are created</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center mt-0.5">4</span>
                   <div>
-                    <p className="font-medium">Update .env File</p>
-                    <p className="text-muted-foreground">Replace placeholder values with your credentials</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center mt-0.5">5</span>
-                  <div>
-                    <p className="font-medium">Run Migrations</p>
-                    <p className="text-muted-foreground">Execute SQL files in the SQL editor</p>
+                    <p className="font-medium">Test Connection</p>
+                    <p className="text-muted-foreground">Use the connection status panel to verify everything works</p>
                   </div>
                 </div>
               </div>

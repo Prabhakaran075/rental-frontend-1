@@ -21,6 +21,7 @@ import { MyRentals } from './pages/MyRentals';
 import { Payment } from './pages/Payment';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { DatabaseSetup } from './pages/DatabaseSetup';
 import { Toaster } from '@/components/ui/toaster';
 import { useAppSelector } from './hooks';
 
@@ -53,6 +54,7 @@ function App() {
               <Route path="/host/create-product" element={<CreateProduct />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/database-setup" element={<DatabaseSetup />} />
             </Routes>
           </main>
 

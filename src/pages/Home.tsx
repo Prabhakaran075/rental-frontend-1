@@ -5,8 +5,7 @@ import { HomeBanners } from '../components/layout/HomeBanners';
 import { SkeletonHero } from '../components/ui/skeleton-hero';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { ProductFilters } from '../components/product/ProductFilters';
-import { Pagination } from '../components/ui/pagination';
-import { SkeletonCard } from '../components/ui/skeleton-card';
+import { PaginationWrapper } from '../components/ui/pagination-wrapper';
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { 
   setProducts, 
@@ -24,7 +23,6 @@ import {
 import { useMemo } from 'react';
 import { productService } from '../services/productService';
 import { transformProducts } from '../services/productTransform';
-import { Product } from '../types/product';
 
 export const Home = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +39,6 @@ export const Home = () => {
     availabilityFilter,
     locationFilter
   } = useAppSelector((state) => state.products);
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   const productsPerPage = 8;
 
@@ -204,7 +201,7 @@ export const Home = () => {
               <div className="h-10 bg-gray-200 rounded w-64 animate-pulse"></div>
             </div>
           ) : (
-            <Pagination
+            <PaginationWrapper
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={(page) => dispatch(setCurrentPage(page))}

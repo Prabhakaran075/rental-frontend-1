@@ -2,72 +2,42 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from './input';
 import { Button } from './button';
-import { Card, CardContent } from './card';
-import { Badge } from './badge';
-import { mockProducts } from '../../data/products';
+import { cn } from '@/lib/utils';
 
 interface SearchWithSuggestionsProps {
   value: string;
   onChange: (value: string) => void;
+  suggestions?: string[];
   placeholder?: string;
   className?: string;
 }
 
-export const SearchWithSuggestions = ({ 
-  value, 
-  onChange, 
-  placeholder = "Search products...",
-  className = ""
+export const SearchWithSuggestions = ({
+  value,
+  onChange,
+  suggestions = [],
+  placeholder = 'Search...',
+  className,
 }: SearchWithSuggestionsProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (value.trim().length > 0) {
-      // Get product name suggestions
-      const productSuggestions = mockProducts
-        .filter(product => 
-          product.name.toLowerCase().includes(value.toLowerCase()) ||
-          product.category.toLowerCase().includes(value.toLowerCase()) ||
-          product.tags.some(tag => tag.toLowerCase().includes(value.toLowerCase()))
-        )
-        .slice(0, 5)
-        .map(product => product.name);
-
-      // Get category suggestions
-      const categorySuggestions = Array.from(new Set(
-        mockProducts
-          .filter(product => 
-            product.category.toLowerCase().includes(value.toLowerCase())
-          )
-          .map(product => product.category)
-      )).slice(0, 3);
-
-      // Get tag suggestions
-      const tagSuggestions = Array.from(new Set(
-        mockProducts
-          .flatMap(product => product.tags)
-          .filter(tag => tag.toLowerCase().includes(value.toLowerCase()))
-      )).slice(0, 3);
-
-      const allSuggestions = [
-        ...productSuggestions,
-        ...categorySuggestions,
-        ...tagSuggestions
-      ].slice(0, 8);
-
-      setSuggestions(allSuggestions);
-      setShowSuggestions(allSuggestions.length > 0);
+    if (value && suggestions.length > 0) {
+      const filtered = suggestions.filter((suggestion) =>
+        suggestion.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
     } else {
       setShowSuggestions(false);
-      setSuggestions([]);
     }
-  }, [value]);
+  }, [value, suggestions]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
     };
@@ -81,51 +51,49 @@ export const SearchWithSuggestions = ({
     setShowSuggestions(false);
   };
 
-  const clearSearch = () => {
+  const handleClear = () => {
     onChange('');
     setShowSuggestions(false);
   };
 
   return (
-    <div ref={searchRef} className={`relative ${className}`}>
+    <div ref={wrapperRef} className={cn('relative', className)}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
+          type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={() => value && filteredSuggestions.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
           className="pl-10 pr-10"
-          onFocus={() => value.trim().length > 0 && suggestions.length > 0 && setShowSuggestions(true)}
         />
         {value && (
           <Button
+            type="button"
             variant="ghost"
-            size="sm"
-            onClick={clearSearch}
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted"
+            size="icon"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+            onClick={handleClear}
           >
-            <X className="h-3 w-3" />
+            <X className="h-4 w-4" />
           </Button>
         )}
       </div>
 
-      {showSuggestions && suggestions.length > 0 && (
-        <Card className="absolute top-full left-0 right-0 z-50 mt-1 max-h-64 overflow-y-auto">
-          <CardContent className="p-2">
-            <div className="space-y-1">
-              {suggestions.map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors flex items-center space-x-2"
-                >
-                  <Search className="h-3 w-3 text-muted-foreground" />
-                  <span>{suggestion}</span>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {showSuggestions && (
+        <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-60 overflow-auto">
+          {filteredSuggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full px-4 py-2 text-left hover:bg-accent transition-colors text-sm"
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );

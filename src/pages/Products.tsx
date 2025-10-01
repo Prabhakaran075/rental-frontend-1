@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { ProductFilters } from '../components/product/ProductFilters';
-import { Pagination } from '../components/ui/pagination';
+import { PaginationWrapper } from '../components/ui/pagination-wrapper';
 import { SkeletonCard } from '../components/ui/skeleton-card';
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { 
@@ -20,7 +20,6 @@ import {
 import { useMemo } from 'react';
 import { productService } from '../services/productService';
 import { transformProducts } from '../services/productTransform';
-import { Product } from '../types/product';
 
 export const Products = () => {
   const dispatch = useAppDispatch();
@@ -188,7 +187,7 @@ export const Products = () => {
 
       <ProductGrid products={currentProducts} loading={false} />
 
-      <Pagination
+      <PaginationWrapper
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={(page) => dispatch(setCurrentPage(page))}

@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Database, CircleCheck as CheckCircle, Circle as XCircle, CircleAlert as AlertCircle, ExternalLink } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Badge } from './badge';
 import { supabase } from '@/lib/supabase';
 
-export const DatabaseStatus = () => {
-  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
-  const [error, setError] = useState<string | null>(null);
-  const [tableCount, setTableCount] = useState<number>(0);
+type ConnectionStatus = 'checking' | 'connected' | 'disconnected' | 'error';
+
+interface DatabaseStatusProps {
+  showDetails?: boolean;
+}
+
+export const DatabaseStatus = ({ showDetails = false }: DatabaseStatusProps) => {
+  const [status, setStatus] = useState<ConnectionStatus>('checking');
+  const [details, setDetails] = useState<string>('');
 
   useEffect(() => {
     checkConnection();
@@ -17,145 +19,89 @@ export const DatabaseStatus = () => {
 
   const checkConnection = async () => {
     try {
-      setConnectionStatus('checking');
-      setError(null);
+      setStatus('checking');
 
-      // Test basic connection
-      const { data, error: connectionError } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select('count', { count: 'exact', head: true });
+        .select('count')
+        .limit(1)
+        .maybeSingle();
 
-      if (connectionError) {
-        throw connectionError;
-      }
-
-      // Check if tables exist by trying to query each main table
-      const tables = ['profiles', 'products', 'rentals', 'favorites', 'reviews', 'notifications'];
-      let existingTables = 0;
-
-      for (const table of tables) {
-        try {
-          const { error } = await supabase
-            .from(table)
-            .select('count', { count: 'exact', head: true });
-          
-          if (!error) {
-            existingTables++;
-          }
-        } catch (e) {
-          // Table doesn't exist or no access
+      if (error) {
+        if (error.message.includes('relation') || error.message.includes('does not exist')) {
+          setStatus('disconnected');
+          setDetails('Database tables not found. Please run migrations.');
+        } else {
+          setStatus('error');
+          setDetails(error.message);
         }
+      } else {
+        setStatus('connected');
+        setDetails('Database is connected and ready.');
       }
-
-      setTableCount(existingTables);
-      setConnectionStatus('connected');
-    } catch (err: any) {
-      setError(err.message || 'Failed to connect to database');
-      setConnectionStatus('error');
+    } catch (err) {
+      setStatus('error');
+      setDetails('Failed to connect to database. Check your credentials.');
+      console.error('Database connection error:', err);
     }
   };
 
   const getStatusIcon = () => {
-    switch (connectionStatus) {
+    switch (status) {
       case 'checking':
-        return <AlertCircle className="h-5 w-5 text-yellow-500 animate-pulse" />;
+        return <Loader2 className="h-4 w-4 animate-spin" />;
       case 'connected':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-4 w-4" />;
+      case 'disconnected':
       case 'error':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle className="h-4 w-4" />;
     }
   };
 
-  const getStatusBadge = () => {
-    switch (connectionStatus) {
+  const getStatusVariant = () => {
+    switch (status) {
       case 'checking':
-        return <Badge variant="secondary">Checking...</Badge>;
+        return 'secondary';
       case 'connected':
-        return <Badge variant="default" className="bg-green-500">Connected</Badge>;
+        return 'default';
+      case 'disconnected':
       case 'error':
-        return <Badge variant="destructive">Error</Badge>;
+        return 'destructive';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (status) {
+      case 'checking':
+        return 'Checking...';
+      case 'connected':
+        return 'Connected';
+      case 'disconnected':
+        return 'Not Connected';
+      case 'error':
+        return 'Error';
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Database className="h-5 w-5" />
-          Database Connection Status
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {getStatusIcon()}
-            <span className="font-medium">Supabase Connection</span>
-          </div>
-          {getStatusBadge()}
-        </div>
-
-        {connectionStatus === 'connected' && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span>Database Tables:</span>
-              <span className="font-medium">{tableCount}/6 detected</span>
-            </div>
-            
-            {tableCount < 6 && (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Some database tables are missing. Please run the migrations in your Supabase SQL editor.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {tableCount === 6 && (
-              <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800 dark:text-green-200">
-                  All database tables are properly set up and accessible!
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Badge variant={getStatusVariant()} className="gap-1.5">
+          {getStatusIcon()}
+          {getStatusText()}
+        </Badge>
+        {status !== 'checking' && status !== 'connected' && (
+          <button
+            onClick={checkConnection}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Retry
+          </button>
         )}
-
-        {connectionStatus === 'error' && (
-          <Alert variant="destructive">
-            <XCircle className="h-4 w-4" />
-            <AlertDescription>
-              <div className="space-y-2">
-                <p>Database connection failed:</p>
-                <code className="text-xs bg-red-100 dark:bg-red-900 p-1 rounded">
-                  {error}
-                </code>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={checkConnection}>
-            Test Connection
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <a 
-              href="https://supabase.com/dashboard/project/wvudegowhsydejnjnxpm" 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Open Supabase
-            </a>
-          </Button>
-        </div>
-
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p><strong>Project URL:</strong> {import.meta.env.VITE_SUPABASE_URL}</p>
-          <p><strong>Status:</strong> {connectionStatus === 'connected' ? 'Ready for use' : 'Needs setup'}</p>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+      {showDetails && details && (
+        <p className="text-xs text-muted-foreground">{details}</p>
+      )}
+    </div>
   );
 };

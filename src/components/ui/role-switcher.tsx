@@ -1,108 +1,45 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserCheck, Users, Building } from 'lucide-react';
-import { Button } from './button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './dropdown-menu';
-import { Badge } from './badge';
-import { AuthModal } from '../auth/AuthModal';
-import { useAppSelector, useAppDispatch } from '../../hooks';
-import { switchRole } from '../../store/slices/authSlice';
-import type { User } from '../../store/slices/authSlice';
+import { User, Briefcase } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useAppSelector } from "@/hooks"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-export const RoleSwitcher = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+export function RoleSwitcher() {
+  const navigate = useNavigate()
+  const { user } = useAppSelector((state) => state.auth)
+  const isHost = user?.role === 'host'
 
-  const handleRoleSwitch = (newRole: 'renter' | 'host') => {
-    if (!isAuthenticated) {
-      setAuthMode(newRole === 'host' ? 'signup' : 'login');
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    if (newRole === 'host' && user?.role === 'renter') {
-      // Redirect to KYC process for becoming a host
-      navigate('/host/kyc');
-      return;
-    }
-
-    dispatch(switchRole(newRole));
-    
-    // Navigate to appropriate dashboard
-    if (newRole === 'host') {
-      navigate('/host/dashboard');
-    } else {
-      navigate('/');
-    }
-  };
-
-  if (!isAuthenticated) {
-    return (
-      <>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Users className="h-4 w-4 mr-2" />
-              Join as
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleRoleSwitch('renter')}>
-              <UserCheck className="h-4 w-4 mr-2" />
-              Renter
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRoleSwitch('host')}>
-              <Building className="h-4 w-4 mr-2" />
-              Host
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-          defaultMode={authMode}
-        />
-      </>
-    );
-  }
+  if (!user) return null
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2">
-          {user?.role === 'host' ? (
-            <Building className="h-4 w-4" />
+        <Button variant="ghost" size="icon">
+          {isHost ? (
+            <Briefcase className="h-[1.2rem] w-[1.2rem]" />
           ) : (
-            <UserCheck className="h-4 w-4" />
+            <User className="h-[1.2rem] w-[1.2rem]" />
           )}
-          <span className="capitalize">{user?.role}</span>
-          <Badge variant="secondary" className="ml-1">
-            Switch
-          </Badge>
+          <span className="sr-only">Switch role</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem 
-          onClick={() => handleRoleSwitch('renter')}
-          disabled={user?.role === 'renter'}
-        >
-          <UserCheck className="h-4 w-4 mr-2" />
-          Renter
-          {user?.role === 'renter' && <Badge variant="default" className="ml-2">Current</Badge>}
+        <DropdownMenuItem onClick={() => navigate("/")}>
+          <User className="mr-2 h-4 w-4" />
+          Renter View
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => handleRoleSwitch('host')}
-          disabled={user?.role === 'host'}
-        >
-          <Building className="h-4 w-4 mr-2" />
-          Host
-          {user?.role === 'host' && <Badge variant="default" className="ml-2">Current</Badge>}
-        </DropdownMenuItem>
+        {user.role === 'host' && (
+          <DropdownMenuItem onClick={() => navigate("/host/dashboard")}>
+            <Briefcase className="mr-2 h-4 w-4" />
+            Host Dashboard
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-};
+  )
+}

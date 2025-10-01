@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { CircleCheck as CheckCircle, Circle as XCircle, Loader as Loader2 } from 'lucide-react';
 import { Badge } from './badge';
 import { supabase } from '@/lib/supabase';
 
